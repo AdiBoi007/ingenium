@@ -1,0 +1,22 @@
+# Curriculum and course assessments
+
+The Syllabus tab inside each project's Progress page stores explicit topic coverage separately from self-reported confidence and question performance. Initial topics are derived only from that project's actual question bank and explicitly supplied syllabus outline. Projects without either start with zero topics and zero coverage. This is a student-controlled map, not a complete or verified official syllabus.
+
+Eleven versioned template records cover JEE Main, JEE Advanced, combined JEE, NEET, GMAT, SAT, school/boards, A-levels, college/university courses, introductory programming and custom goals. School and university templates impose no subject list. The INFO1110 creation preset supplies a small, editable original programming outline and the institution/code labels; it is not an official University of Sydney syllabus and does not claim verified current course content. Board, qualification and session details remain student-supplied. Templates do not promise official scoring, an adaptive exam algorithm, or a complete question bank.
+
+Project kinds are `course`, `exam`, `school`, `personal`, and `custom`. The project API persists `institution`, `courseCode`, `qualification`, `level`, `academicYear`, `learningGoal`, and `syllabusText` as first-class fields. Names, subjects and context can be edited in Project settings. Metadata changes preserve existing questions, attempts, topic coverage, assessments and resources; changing metadata alone does not migrate a reviewed syllabus version.
+
+Creation and settings accept a plain-text syllabus outline, directly pasted or imported from a TXT/Markdown file. Each nonempty line is a topic; `Subject | Topic` explicitly assigns a subject, while plain lines use the first configured subject or `General`. The parser allows at most 300 lines, 50,000 characters total and 200 characters per subject/title, deduplicating matching lines. It does not infer a syllabus from prose or parse PDFs as topic outlines. PDFs can be added to Library for source reading. `PATCH /api/projects/:projectId/curriculum` with `{action:"import-outline",text,defaultSubject?}` adds new topics transactionally, retains existing topics and coverage, and persists the supplied outline. Re-imports are idempotent. Removing a line from the outline does not remove an existing topic; explicit topic controls and reviewed version mapping handle that separately.
+
+Topics have project-scoped identifiers, optimistic revisions and database-enforced project references. Prerequisites reject direct and indirect cycles in both the service and a database trigger. A topic needed by another active topic cannot be archived until that dependency is removed.
+
+Changing a version requires an explicit mapping preview. Mapped topics keep their identifiers, coverage and confidence; unmapped topics remain historical. New topics begin not started and unrated. Existing question attempts and question snapshots are never rewritten. A version change is transactional and records the former configuration and topic snapshot. Concurrent stale edits return a conflict rather than overwriting newer work. Prerequisites retained on historical topics remain stored for interpretability; the planner should use only active topics.
+
+Assessments are grouped by course. Each course can allocate at most 100% of its weight, enforced by a database trigger under a project-row lock. Marks must be finite, nonnegative and no greater than maximum marks. Unmarked work is represented by null, not zero.
+
+- Earned weighted points: sum of `weight × mark / maximum mark` for graded work, out of a possible 100 course points.
+- Performance on completed assessments: earned weighted points divided by graded weight, expressed as a percentage. Undefined until some work is graded.
+- Remaining weight: 100 minus graded weight, including assigned-but-ungraded and currently unallocated work.
+- No future grade or official outcome is predicted.
+
+Apply checked-in migrations `010_curriculum.sql` and `014_universal_projects.sql` with `npm run db:migrate`. The scoped API paths are `/api/projects/:projectId/curriculum` and `/api/projects/:projectId/assessments`. `GET` returns topics, template, template catalogue, assessments and summaries. Topic updates and version mutations use validated `PATCH` actions and revisions; additive outline import is idempotent. Template rows and initial topics are created idempotently on first curriculum access; subsequent access does not reset student edits.

@@ -1,0 +1,81 @@
+export type Project = {
+  id: string;
+  name: string;
+  exam: string;
+  projectKind?: import("@/domain/project-context").ProjectKind;
+  institution?: string;
+  courseCode?: string;
+  qualification?: string;
+  level?: string;
+  academicYear?: string;
+  learningGoal?: string;
+  syllabusText?: string;
+  subjects: string[];
+  description?: string;
+  targetDate?: string;
+  accent?: string;
+  archived?: boolean;
+  pinned?: boolean;
+  settings?: Record<string, any>;
+  updatedAt?: string;
+};
+export type Task = {
+  id: string;
+  projectId: string;
+  title: string;
+  date: string;
+  time: string;
+  duration: number;
+  subject: string;
+  type: string;
+  status: string;
+};
+export type Resource = {
+  id: string;
+  projectId: string;
+  title: string;
+  type: string;
+  subject: string;
+  content?: string;
+  description?: string;
+  pinned?: boolean;
+  url?: string;
+  metadata?: Record<string, any>;
+  revision: number;
+};
+export type Lesson = {
+  id: string;
+  projectId: string;
+  title: string;
+  subject: string;
+  topic?: string;
+  channel: string;
+  videoId: string;
+  duration: number;
+  position: number;
+  saved: boolean;
+  completed: boolean;
+  description?: string;
+};
+export type Message = {
+  id: string;
+  role: string;
+  content: string;
+  artifactId?: string;
+  status?: string;
+  context?: Array<{
+    id?: string;
+    title?: string;
+    type?: string;
+    version?: number;
+  }>;
+};
+export type Conversation = {
+  id: string;
+  projectId: string;
+  title: string;
+  subject?: string;
+  messages?: Message[];
+  sample?: boolean;
+  pinned?: boolean;
+};

@@ -1,0 +1,14 @@
+ALTER TABLE messages DROP CONSTRAINT IF EXISTS messages_project_id_artifact_id_fkey;
+ALTER TABLE messages ADD CONSTRAINT messages_project_id_artifact_id_fkey FOREIGN KEY(project_id,artifact_id) REFERENCES artifacts(project_id,id) ON DELETE CASCADE;
+ALTER TABLE tasks DROP CONSTRAINT IF EXISTS tasks_project_id_resource_id_fkey;
+ALTER TABLE tasks ADD CONSTRAINT tasks_project_id_resource_id_fkey FOREIGN KEY(project_id,resource_id) REFERENCES resources(project_id,id) ON DELETE CASCADE;
+ALTER TABLE tasks DROP CONSTRAINT IF EXISTS tasks_plan_fkey;
+ALTER TABLE tasks ADD CONSTRAINT tasks_plan_fkey FOREIGN KEY(project_id,plan_id) REFERENCES plans(project_id,id) ON DELETE CASCADE;
+ALTER TABLE test_items DROP CONSTRAINT IF EXISTS test_items_project_id_question_id_fkey;
+ALTER TABLE test_items ADD CONSTRAINT test_items_project_id_question_id_fkey FOREIGN KEY(project_id,question_id) REFERENCES questions(project_id,id) ON DELETE CASCADE;
+ALTER TABLE attempts DROP CONSTRAINT IF EXISTS attempts_project_id_question_id_fkey;
+ALTER TABLE attempts ADD CONSTRAINT attempts_project_id_question_id_fkey FOREIGN KEY(project_id,question_id) REFERENCES questions(project_id,id) ON DELETE CASCADE;
+ALTER TABLE attempts DROP CONSTRAINT IF EXISTS attempts_project_id_session_id_fkey;
+ALTER TABLE attempts ADD CONSTRAINT attempts_project_id_session_id_fkey FOREIGN KEY(project_id,session_id) REFERENCES test_sessions(project_id,id) ON DELETE CASCADE;
+ALTER TABLE mistakes DROP CONSTRAINT IF EXISTS mistakes_project_id_question_id_fkey;
+ALTER TABLE mistakes ADD CONSTRAINT mistakes_project_id_question_id_fkey FOREIGN KEY(project_id,question_id) REFERENCES questions(project_id,id) ON DELETE CASCADE;
